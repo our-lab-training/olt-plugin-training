@@ -6,7 +6,7 @@
 const DefaultSchema = require('../../../../types/default.schema');
 const NameType = require('../../../../types/name.type');
 const ObjectIdType = require('../../../../types/objectId.type');
-const TypedObjectIdType = require('../../../../types/typedObjectId.type');
+const PermType = require('../../../../types/perm.type');
 
 module.exports = function (app) {
   const mongooseClient = app.get('mongooseClient');
@@ -16,9 +16,25 @@ module.exports = function (app) {
     type: {
       type: String,
       required: true,
-      enum: ['content', 'quizzes', 'inductions'], // TODO: abstract to config 
+      enum: ['doc', 'comment-link', 'perm-timeout'], // TODO: abstract to config 
     },
-    itemId: TypedObjectIdType('type', app),
+    name: NameType(),
+    docId: Schema.Types.ObjectId,
+    link: {
+      type: String,
+      maxLength: [1024, 'link is too long, try a url shortener.'],
+      match: [/https?:\/\/[\w-]+\.[\w-]+((\?|\/|#).*)?/, 'Invalid link provided.'],
+    },
+    perm: PermType(),
+    duration: {
+      type: Number,
+      min: [0, 'You cannot have negative days...'],
+      max: [365, 'Cannot be longer than a year'],
+    },
+    index: {
+      type: Number,
+      min: [0, 'Index cannot be lower than 0'],
+    },
     required: {
       type: Boolean,
       required: true,
@@ -29,11 +45,6 @@ module.exports = function (app) {
   }, {
     toJSON: { getters: true, virtuals: true },
     toObject: { getters: true, virtuals: true },
-  });
-  
-  itemSchema.virtual('name').get(async function () {
-    const item = await app.service(this.type).get(this.itemId);
-    return this.type === 'content' ? item.name : `Complete ${item.name}`;
   });
 
   const trainings = DefaultSchema(app);
@@ -49,10 +60,14 @@ module.exports = function (app) {
       required: true,
       default: [],
     },
+    published: {
+      type: Date,
+    },
     public: {
       type: Boolean,
       required: true, 
     },
+    bindId: ObjectIdType('binders', app),
     groupId: ObjectIdType('groups', app),
   });
   return mongooseClient.model('trainings', trainings);
