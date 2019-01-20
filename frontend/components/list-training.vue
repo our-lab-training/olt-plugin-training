@@ -3,7 +3,7 @@
     <v-toolbar dense class="binder-list">
       <!-- <v-flex shrink>
         <v-select
-          :items="types"
+          :items="bindTypes"
           v-model="type"
         />
       </v-flex> -->
@@ -31,10 +31,30 @@
       <v-list-tile
         v-for="train in trains"
         :key="train._id"
-        :to="`./${train._id}`"
+        :to="`./${train.bindId}`"
       >
         <v-list-tile-content>
           <v-list-tile-title v-text="train.name" />
+          <v-list-tile-sub-title
+            v-if="(new Date(train.published)).getTime() < Date.now()"
+            :class="train.complete ? 'success--text' : 'error--text'"
+          >
+            <v-icon
+              small left
+              :color="train.complete ? 'success' : 'error'"
+            >
+              fal fa-{{train.complete ? 'check-square' : 'times-square'}}
+            </v-icon>
+            {{train.complete ? 'Completed' : 'Incomplete'}}
+          </v-list-tile-sub-title>
+          <v-list-tile-sub-title v-else>
+            <v-icon small left>fal fa-{{train.published ? 'alarm-clock' : 'times'}}</v-icon>
+            Unpublished <span v-if="!train.published">
+              (Created By {{(getUser(train.createdBy) || {}).name}})
+            </span><span v-else>
+              ({{train.published | moment('fromNow')}})
+            </span>
+          </v-list-tile-sub-title>
         </v-list-tile-content>
       </v-list-tile>
 
@@ -53,22 +73,21 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import types from '../../types';
 
 export default {
   data() {
     return {
       search: '',
-      types: [
+      bindTypes: [
         { text: 'All', value: '' },
-        { text: 'Workspace', value: 'workspace' },
-        { text: 'Task/Process', value: 'task' },
-        { text: 'Tool/Equipment', value: 'tool' },
+        ...types.binds,
       ],
       type: '',
     };
   },
   computed: {
-    ...mapGetters('users', { hasPerm: 'hasPerm', currentUser: 'current' }),
+    ...mapGetters('users', { hasPerm: 'hasPerm', currentUser: 'current', getUser: 'get' }),
     ...mapGetters('groups', { currentGroup: 'current' }),
     ...mapGetters('trainings', { findTrain: 'find' }),
     bindId() { return this.$route.params.bindId; },
@@ -76,8 +95,8 @@ export default {
     trains() {
       const query = {
         groupId: this.currentGroup._id,
-        publised: v => (new Date(v)).getTime() < Date.now(),
       };
+      if (!this.writePerm) query.published = v => (new Date(v)).getTime() < Date.now();
       if (this.search) {
         const reg = RegExp(`(${this.search.replace(/\s/g, ')|(')})`, 'i');
         query.name = reg.test;
