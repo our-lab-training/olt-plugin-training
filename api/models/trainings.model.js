@@ -12,7 +12,7 @@ module.exports = function (app) {
   const mongooseClient = app.get('mongooseClient');
   const { Schema } = mongooseClient;
 
-  const itemSchema = new Schema({
+  const stepSchema = new Schema({
     type: {
       type: String,
       required: true,
@@ -20,6 +20,10 @@ module.exports = function (app) {
     },
     name: NameType(),
     docId: Schema.Types.ObjectId,
+    docType: {
+      type: String,
+      enum: ['content', 'inductions', 'quizzes'],
+    },
     link: {
       type: String,
       maxLength: [1024, 'link is too long, try a url shortener.'],
@@ -53,10 +57,11 @@ module.exports = function (app) {
     name: NameType(),
     priority: { 
       type: Number, 
-      required: [true, 'A priority is required to order the trainings.'] 
+      required: [true, 'A priority is required to order the trainings.'],
+      default: 50,
     },
-    items: { 
-      type: [itemSchema],
+    steps: { 
+      type: [stepSchema],
       required: true,
       default: [],
     },
@@ -65,7 +70,8 @@ module.exports = function (app) {
     },
     public: {
       type: Boolean,
-      required: true, 
+      required: true,
+      default: false,
     },
     bindId: ObjectIdType('binders', app),
     groupId: ObjectIdType('groups', app),

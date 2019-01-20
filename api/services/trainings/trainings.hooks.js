@@ -1,10 +1,10 @@
-
-
+const { authenticate } = require('@feathersjs/authentication').hooks;
 const safeRemove = require('../../../../../hooks/safe-remove');
+const checkComplete = require('../../hooks/checkComplete');
 
 module.exports = {
   before: {
-    all: [],
+    all: [authenticate('jwt')],
     find: [],
     get: [],
     create: [],
@@ -14,7 +14,7 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [checkComplete()],
     find: [],
     get: [],
     create: [],
