@@ -14,6 +14,16 @@
       {{id === 'new' ? 'New Training' : training.name}}
     </v-toolbar-title>
     <v-spacer />
+    <v-tooltip v-if="!edit" top>
+      <v-btn
+        slot="activator"
+        flat icon
+        @click.stop="$emit('refresh')"
+      >
+        <v-icon>fal fa-sync {{isFindPending ? 'fa-spin' : ''}}</v-icon>
+      </v-btn>
+      <span>Refresh</span>
+    </v-tooltip>
     <v-tooltip v-if="writePerm && !edit" top>
       <v-btn
         slot="activator"
@@ -41,7 +51,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 export default {
   props: {
@@ -70,6 +80,7 @@ export default {
     };
   },
   computed: {
+    ...mapState('trainings', ['isFindPending']),
     ...mapGetters('users', { hasPerm: 'hasPerm', currentUser: 'current' }),
     ...mapGetters('groups', { currentGroup: 'current' }),
     id() { return this.$route.params.bindId; },
