@@ -1,3 +1,5 @@
+import perms from '../perms';
+
 export default {
   ref: 'training',
   name: 'Training',
@@ -25,4 +27,5 @@ export default {
       },
     },
   },
+  perms,
 };
