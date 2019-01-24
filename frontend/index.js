@@ -14,7 +14,7 @@ export default {
       icon: 'school',
       priority: 110,
       visiblePerms: [
-        '{groupId}.training.read',
+        '{groupId}.trainings.read',
       ],
     },
   },
