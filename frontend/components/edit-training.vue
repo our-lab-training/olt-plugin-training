@@ -111,6 +111,36 @@
           Save
         </v-btn>
       </v-layout>
+      <v-layout row wrap v-if="bindId !== 'new'">
+        <v-flex xs12>
+          <h2>
+            Users Completed ({{
+              usersData.reduce((a, user) => user.comPerm ? a + 1 : a, 0)
+            }}/{{usersData.length}})
+          </h2>
+        </v-flex>
+        <v-flex xs12>
+          <v-data-table
+            :headers="[
+              {text: 'Username', value: 'username'},
+              {text: 'Name', value: 'name'},
+              {text: 'Completed?', value: 'comPerm'},
+              {text: 'Date Completed', value: 'comPerm.createdAt'},
+            ]"
+            :items="usersData"
+            class="elevation-1"
+          >
+            <template slot="items" slot-scope="props">
+              <td>{{ props.item.username }}</td>
+              <td>{{ props.item.name }}</td>
+              <td>{{ props.item.comPerm ? 'Yes' : 'No' }}</td>
+              <td><span v-if="props.item.comPerm">
+                {{ props.item.comPerm.createdAt | moment('DD/MM/YYYY') }}
+              </span></td>
+            </template>
+          </v-data-table>
+        </v-flex>
+      </v-layout>
     </v-container>
     <v-dialog
       v-model="stepDialog"
@@ -247,7 +277,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('users', { hasPerm: 'hasPerm', currentUser: 'current' }),
+    ...mapGetters('users', { hasPerm: 'hasPerm', currentUser: 'current', findUser: 'find' }),
     ...mapGetters('groups', { currentGroup: 'current' }),
     ...mapGetters('binders', { getBind: 'get', findBind: 'find' }),
     ...mapGetters('trainings', { getTrain: 'get', findTrain: 'find' }),
@@ -294,6 +324,13 @@ export default {
         || this.step.type === 'comment-link'
       );
     },
+    usersData() {
+      return this.findUser({ query: { 'perms.groups': this.currentGroup._id } }).data
+        .map(user => ({
+          ...user,
+          comPerm: user.perms.userperms.find(p => p.perm.join('.') === `trainings.${this.training._id}.complete`),
+        }));
+    },
   },
   methods: {
     setTrain() {
@@ -337,7 +374,7 @@ export default {
     },
     perm2trainId(perm) {
       return perm
-        ? (perm.match(/(?<=training\.)[0-9abcdef]{24}(?=\.complete)/) || [])[0]
+        ? (perm.match(/(trainings?\.)[0-9abcdef]{24}(?=\.complete)/) || [''])[0].replace(/trainings?\./, '')
         : null;
     },
     async save() {

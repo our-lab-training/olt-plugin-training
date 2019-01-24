@@ -91,7 +91,7 @@ export default {
     ...mapGetters('groups', { currentGroup: 'current' }),
     ...mapGetters('trainings', { findTrain: 'find' }),
     bindId() { return this.$route.params.bindId; },
-    writePerm() { return this.hasPerm(`${this.currentGroup._id}.training.write`); },
+    writePerm() { return this.hasPerm(`${this.currentGroup._id}.trainings.write`); },
     trains() {
       const query = {
         groupId: this.currentGroup._id,

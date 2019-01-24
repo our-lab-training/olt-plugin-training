@@ -84,7 +84,7 @@ export default {
     ...mapGetters('users', { hasPerm: 'hasPerm', currentUser: 'current' }),
     ...mapGetters('groups', { currentGroup: 'current' }),
     id() { return this.$route.params.bindId; },
-    writePerm() { return this.hasPerm(`${this.currentGroup._id}.binder.write`); },
+    writePerm() { return this.hasPerm(`${this.currentGroup._id}.trainings.write`); },
     edit() { return this.writePerm && (typeof this.$route.query.edit !== 'undefined' || this.id === 'new'); },
   },
   methods: {
