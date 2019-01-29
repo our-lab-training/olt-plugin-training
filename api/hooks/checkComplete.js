@@ -8,6 +8,7 @@ module.exports = function (options = {}) {
   return async context => {
     const { app, params } = context;
     if (!params.user) return context;
+    const paginate = app.get('paginate');
 
     const checkComplete = async (item) => {
       await Promise.all(item.steps.map(async (step) => {
@@ -21,7 +22,7 @@ module.exports = function (options = {}) {
           if (step.docType === 'content') query.perm = ['trainings', `${step._id}`, 'accept'];
           else query.perm = [step.docType, `${step.docId}`, 'complete'];
         } else return;
-        const { total } = await app.service('perms').find({ query });
+        const { total } = await app.service('perms').find({ query, paginate });
         if (total) step.complete = true;
       }));
       const { total } = await app.service('perms').find({
