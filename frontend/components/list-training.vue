@@ -99,7 +99,7 @@ export default {
       if (!this.writePerm) query.published = v => (new Date(v)).getTime() < Date.now();
       if (this.search) {
         const reg = RegExp(`(${this.search.replace(/\s/g, ')|(')})`, 'i');
-        query.name = reg.test;
+        query.name = v => reg.test(v);
       }
       return this.findTrain({ query }).data;
     },
