@@ -2,6 +2,7 @@
 
 const DefaultSchema = require('../../../../types/default.schema');
 const nameType = require('../../../../types/name.type');
+const descType = require('../../../../types/desc.type');
 const ObjectIdType = require('../../../../types/objectId.type');
 
 module.exports = function (app) {
@@ -22,6 +23,7 @@ module.exports = function (app) {
       name: nameType(),
       children: [{
         name: nameType(),
+        desc: descType(),
       }],
     }],
   });
