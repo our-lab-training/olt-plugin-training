@@ -15,6 +15,9 @@ module.exports = function (app) {
       default: false,
       required: true,
     },
+    published: {
+      type: Date,
+    },
     list: [{
       name: nameType(),
       children: [{
