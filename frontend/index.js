@@ -11,10 +11,21 @@ export default {
       entry: true,
       component: () => import('./training.vue'),
       path: '/group/{groupId}/training/:bindId?',
-      icon: 'school',
+      icon: 'fal fa-graduation-cap',
       priority: 110,
       visiblePerms: [
         '{groupId}.trainings.read',
+      ],
+    },
+    inductions: {
+      name: 'Inductions',
+      entry: true,
+      component: () => import('./inductions.vue'),
+      path: '/group/{groupId}/inductions/:inductId?',
+      icon: 'fal fa-clipboard-list-check',
+      priority: 110,
+      visiblePerms: [
+        '{groupId}.inductions.inductor',
       ],
     },
   },
@@ -24,6 +35,18 @@ export default {
         name: '',
         steps: [],
         published: null,
+      },
+    },
+    inductions: {
+      instanceDefaults: {
+        name: '',
+        list: [],
+        published: null,
+      },
+    },
+    'completed-inductions': {
+      instanceDefaults: {
+        list: [],
       },
     },
   },
