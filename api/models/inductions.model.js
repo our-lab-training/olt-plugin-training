@@ -10,6 +10,7 @@ module.exports = function (app) {
   const inductions = DefaultSchema(app);
   inductions.add({
     name: nameType(),
+    desc: descType(),
     groupId: ObjectIdType('groups', app),
     public: {
       type: Boolean,
@@ -21,6 +22,7 @@ module.exports = function (app) {
     },
     list: [{
       name: nameType(),
+      desc: descType(),
       children: [{
         name: nameType(),
         desc: descType(),
