@@ -12,20 +12,20 @@ module.exports = {
     find: [],
     get: [],
     create: [
-      restrictMethod('inductions.{data.inductId}.inductor'),
+      restrictMethod(['inductions.{data.inductId}.inductor', '{data.groupId}.inductions.inductor']),
       discard('userIds'),
       validateUsers(),
     ],
     update: [
-      restrictMethod('inductions.{data.inductId}.inductor'),
+      restrictMethod(['inductions.{data.inductId}.inductor', '{data.groupId}.inductions.inductor']),
       iff(cont => cont.existing && cont.existing.done, disallow('external')),
-      discard('userIds'),
+      discard(['userIds', 'groupId']),
       validateUsers(),
     ],
     patch: [
-      restrictMethod('inductions.{data.inductId}.inductor'),
+      restrictMethod(['inductions.{data.inductId}.inductor', '{data.groupId}.inductions.inductor']),
       iff(cont => cont.existing && cont.existing.done, disallow('external')),
-      discard('userIds'),
+      discard(['userIds', 'groupId']),
       validateUsers(),
     ],
     remove: [
