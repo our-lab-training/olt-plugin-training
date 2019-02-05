@@ -9,7 +9,18 @@ module.exports = function (app) {
   const inductions = DefaultSchema(app);
   inductions.add({
     name: nameType(),
-    content: [ObjectIdType('content', app)],
+    groupId: ObjectIdType('groups', app),
+    public: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+    list: [{
+      name: nameType(),
+      children: [{
+        name: nameType(),
+      }],
+    }],
   });
 
   return mongooseClient.model('inductions', inductions);
