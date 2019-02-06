@@ -14,15 +14,27 @@
       {{id === 'new' ? 'New Training' : training.name}}
     </v-toolbar-title>
     <v-spacer />
-    <v-tooltip v-if="!edit" top>
+    <v-tooltip v-if="stat || edit" top>
       <v-btn
         slot="activator"
+        to="?view"
         flat icon
-        @click.stop="$emit('refresh')"
+        :disabled="disabled"
       >
-        <v-icon>fal fa-sync {{isFindPending ? 'fa-spin' : ''}}</v-icon>
+        <v-icon>fal fa-eye</v-icon>
       </v-btn>
-      <span>Refresh</span>
+      <span>View</span>
+    </v-tooltip>
+    <v-tooltip v-if="writePerm && !stat" top>
+      <v-btn
+        slot="activator"
+        to="?stats"
+        flat icon
+        :disabled="disabled"
+      >
+        <v-icon>fal fa-chart-bar</v-icon>
+      </v-btn>
+      <span>Stats</span>
     </v-tooltip>
     <v-tooltip v-if="writePerm && !edit" top>
       <v-btn
@@ -46,6 +58,16 @@
         <v-icon>fal fa-save</v-icon>
       </v-btn>
       <span>Save</span>
+    </v-tooltip>
+    <v-tooltip v-if="!edit" top>
+      <v-btn
+        slot="activator"
+        flat icon
+        @click.stop="$emit('refresh')"
+      >
+        <v-icon>fal fa-sync {{isFindPending ? 'fa-spin' : ''}}</v-icon>
+      </v-btn>
+      <span>Refresh</span>
     </v-tooltip>
   </v-toolbar>
 </template>
@@ -86,6 +108,7 @@ export default {
     id() { return this.$route.params.bindId; },
     writePerm() { return this.hasPerm(`${this.currentGroup._id}.trainings.write`); },
     edit() { return this.writePerm && (typeof this.$route.query.edit !== 'undefined' || this.id === 'new'); },
+    stat() { return this.writePerm && typeof this.$route.query.stats !== 'undefined'; },
   },
   methods: {
     async deleteBind() {

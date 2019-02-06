@@ -62,7 +62,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex';
-import types from '../../types';
+import types from '../../../types';
 import veToolbar from './view-edit-toolbar.vue';
 
 export default {

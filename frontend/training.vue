@@ -5,9 +5,8 @@
         <list-train />
       </v-flex>
       <v-flex xs12 md8 v-if="id">
-        <edit-train
-          v-if="edit"
-        />
+        <edit-train v-if="edit" />
+        <stat-train v-else-if="stat" />
         <view-train v-else />
       </v-flex>
     </v-layout>
@@ -16,15 +15,17 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex';
-import editTrain from './components/edit-training.vue';
-import listTrain from './components/list-training.vue';
-import viewTrain from './components/view-training.vue';
+import editTrain from './components/training/edit-training.vue';
+import listTrain from './components/training/list-training.vue';
+import viewTrain from './components/training/view-training.vue';
+import statTrain from './components/training/stat-training.vue';
 
 export default {
   components: {
     editTrain,
     listTrain,
     viewTrain,
+    statTrain,
   },
   data() {
     return {};
@@ -35,6 +36,7 @@ export default {
     id() { return this.$route.params.bindId; },
     writePerm() { return this.hasPerm(`${this.currentGroup._id}.binder.write`); },
     edit() { return this.writePerm && (typeof this.$route.query.edit !== 'undefined' || this.id === 'new'); },
+    stat() { return this.writePerm && typeof this.$route.query.stats !== 'undefined'; },
   },
   methods: {
     ...mapActions('binders', ['find']),

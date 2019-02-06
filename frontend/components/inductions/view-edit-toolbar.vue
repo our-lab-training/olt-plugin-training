@@ -14,16 +14,6 @@
       {{id === 'new' ? 'New Induction' : induction.name}}
     </v-toolbar-title>
     <v-spacer />
-    <v-tooltip v-if="!edit" top>
-      <v-btn
-        slot="activator"
-        flat icon
-        @click.stop="$emit('refresh')"
-      >
-        <v-icon>fal fa-sync {{isGetPending ? 'fa-spin' : ''}}</v-icon>
-      </v-btn>
-      <span>Refresh</span>
-    </v-tooltip>
     <v-tooltip v-if="writePerm" top>
       <v-btn
         slot="activator"
@@ -34,6 +24,28 @@
         <v-icon>fal fa-trash</v-icon>
       </v-btn>
       <span>Delete</span>
+    </v-tooltip>
+    <v-tooltip v-if="stat || edit" top>
+      <v-btn
+        slot="activator"
+        to="?view"
+        flat icon
+        :disabled="disabled"
+      >
+        <v-icon>fal fa-eye</v-icon>
+      </v-btn>
+      <span>View</span>
+    </v-tooltip>
+    <v-tooltip v-if="writePerm && !stat" top>
+      <v-btn
+        slot="activator"
+        to="?stats"
+        flat icon
+        :disabled="disabled"
+      >
+        <v-icon>fal fa-chart-bar</v-icon>
+      </v-btn>
+      <span>Stats</span>
     </v-tooltip>
     <v-tooltip v-if="writePerm && !edit" top>
       <v-btn
@@ -58,20 +70,28 @@
       </v-btn>
       <span>Save</span>
     </v-tooltip>
-    <v-layout row justify-center>
-      <v-dialog v-model="del" persistent max-width="300">
-        <v-card>
-          <v-card-title class="headline">
-            Are you sure you want to delete this induction forever?
-          </v-card-title>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn flat @click.stop="del = false">Cancel</v-btn>
-            <v-btn color="error" flat @click.stop="deleteInduct">Delete</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-layout>
+    <v-tooltip v-if="!edit" top>
+      <v-btn
+        slot="activator"
+        flat icon
+        @click.stop="$emit('refresh')"
+      >
+        <v-icon>fal fa-sync {{isGetPending ? 'fa-spin' : ''}}</v-icon>
+      </v-btn>
+      <span>Refresh</span>
+    </v-tooltip>
+    <v-dialog v-model="del" persistent max-width="300">
+      <v-card>
+        <v-card-title class="headline">
+          Are you sure you want to delete this induction forever?
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn flat @click.stop="del = false">Cancel</v-btn>
+          <v-btn color="error" flat @click.stop="deleteInduct">Delete</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-toolbar>
 </template>
 
@@ -106,6 +126,7 @@ export default {
     id() { return this.$route.params.inductId; },
     writePerm() { return this.hasPerm(`${this.currentGroup._id}.inductions.write`); },
     edit() { return this.writePerm && (typeof this.$route.query.edit !== 'undefined' || this.id === 'new'); },
+    stat() { return this.writePerm && typeof this.$route.query.stats !== 'undefined'; },
   },
   methods: {
     async deleteInduct() {

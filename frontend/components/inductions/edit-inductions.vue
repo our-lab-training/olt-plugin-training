@@ -20,7 +20,7 @@
           <v-select
             label="Induction Template"
             :items="defaultInductions"
-            :value="inductTemplate"
+            v-model="inductTemplate"
           />
         </v-flex>
         <v-flex xs12 sm6 v-if="inductId !== 'new'">
@@ -37,6 +37,27 @@
             persistent-hint
             v-model="induction.desc"
           />
+        </v-flex>
+        <v-flex xs12 sm6 v-if="inductId !== 'new'">
+          <v-switch
+            label="Show Inductors to Users"
+            v-model="induction.showInductors"
+          />
+        </v-flex>
+        <v-flex xs12 v-if="inductId !== 'new'">
+          <v-textarea
+            label="Booking Instructions"
+            v-model="induction.bookingDesc"
+          />
+        </v-flex>
+      </v-layout>
+      <v-layout row wrap v-if="inductId !== 'new'">
+        <v-flex xs12>
+          <h2>Inductors</h2>
+          <small>Changes in who can induct will automatically save.</small>
+        </v-flex>
+        <v-flex xs12>
+          <manage-perm :perm="['inductions', inductId, 'inductor']"/>
         </v-flex>
       </v-layout>
       <v-layout row wrap v-if="inductId !== 'new'">
@@ -154,41 +175,12 @@
           </v-list>
         </v-flex>
       </v-layout>
-      <v-layout row wrap v-if="induction.name.trim()">
+      <v-layout row wrap v-if="induction.name && induction.name.trim()">
+        <v-spacer />
         <v-btn color="primary" :disabled="loading" @click.stop="save">
           <v-icon left :loading="loading">fal fa-save</v-icon>
           Save
         </v-btn>
-      </v-layout>
-      <v-layout row wrap v-if="inductId !== 'new'">
-        <v-flex xs12>
-          <h2>
-            Users Completed ({{
-              usersData.reduce((a, user) => user.comPerm ? a + 1 : a, 0)
-            }}/{{usersData.length}})
-          </h2>
-        </v-flex>
-        <v-flex xs12>
-          <v-data-table
-            :headers="[
-              {text: 'Username', value: 'username'},
-              {text: 'Name', value: 'name'},
-              {text: 'Completed?', value: 'comPerm'},
-              {text: 'Date Completed', value: 'comPerm.createdAt'},
-            ]"
-            :items="usersData"
-            class="elevation-1"
-          >
-            <template slot="items" slot-scope="props">
-              <td>{{ props.item.username }}</td>
-              <td>{{ props.item.name }}</td>
-              <td>{{ props.item.comPerm ? 'Yes' : 'No' }}</td>
-              <td><span v-if="props.item.comPerm">
-                {{ props.item.comPerm.createdAt | moment('DD/MM/YYYY') }}
-              </span></td>
-            </template>
-          </v-data-table>
-        </v-flex>
       </v-layout>
     </v-container>
     <v-dialog
@@ -241,6 +233,7 @@ import { mapGetters, mapState } from 'vuex';
 import set from 'lodash/set';
 import sortBy from 'lodash/sortBy';
 import reportError from '@/views/partials/report-error.vue';
+import managePerm from '@/views/partials/manage-perm.vue';
 import veToolbar from './view-edit-toolbar.vue';
 import defaultInductions from './default-inductions';
 
@@ -248,6 +241,7 @@ export default {
   components: {
     veToolbar,
     reportError,
+    managePerm,
   },
   data() {
     return {
@@ -270,14 +264,7 @@ export default {
     loading() { return this.isCreatePending || this.isPatchPending; },
     inductId() { return this.$route.params.inductId; },
     itemValid() {
-      return this.item.name.trim();
-    },
-    usersData() {
-      return this.findUser({ query: { 'perms.groups': this.currentGroup._id } }).data
-        .map(user => ({
-          ...user,
-          comPerm: user.perms.userperms.find(p => p.perm.join('.') === `inductions.${this.inductId}.complete`),
-        }));
+      return this.item.name && this.item.name.trim();
     },
   },
   methods: {

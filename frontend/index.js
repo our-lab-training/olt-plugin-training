@@ -40,6 +40,7 @@ export default {
     inductions: {
       instanceDefaults: {
         name: '',
+        bookingDesc: 'Below are a list of inductors, please contact one of them to arrange an induction.',
         list: [],
         published: null,
       },

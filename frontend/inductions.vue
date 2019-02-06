@@ -5,9 +5,8 @@
         <list-induct />
       </v-flex>
       <v-flex xs12 md8 v-if="id">
-        <edit-induct
-          v-if="edit"
-        />
+        <edit-induct v-if="edit" />
+        <stat-induct v-else-if="stat" />
         <view-induct v-else />
       </v-flex>
     </v-layout>
@@ -19,12 +18,14 @@ import { mapActions, mapGetters, mapMutations } from 'vuex';
 import editInduct from './components/inductions/edit-inductions.vue';
 import listInduct from './components/inductions/list-inductions.vue';
 import viewInduct from './components/inductions/view-inductions.vue';
+import statInduct from './components/inductions/stat-inductions.vue';
 
 export default {
   components: {
     editInduct,
     listInduct,
     viewInduct,
+    statInduct,
   },
   data() {
     return {};
@@ -35,6 +36,7 @@ export default {
     id() { return this.$route.params.inductId; },
     writePerm() { return this.hasPerm(`${this.currentGroup._id}.inductions.write`); },
     edit() { return this.writePerm && (typeof this.$route.query.edit !== 'undefined' || this.id === 'new'); },
+    stat() { return this.writePerm && typeof this.$route.query.stats !== 'undefined'; },
   },
   methods: {
     ...mapActions('inductions', ['find']),
