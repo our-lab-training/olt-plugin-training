@@ -73,7 +73,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import types from '../../types';
+import types from '../../../types';
 
 export default {
   data() {
