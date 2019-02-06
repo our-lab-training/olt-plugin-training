@@ -12,6 +12,12 @@ module.exports = function (app) {
     name: nameType(),
     desc: descType(),
     groupId: ObjectIdType('groups', app),
+    bookingDesc: descType(),
+    showInductors: {
+      type: Boolean,
+      default: true,
+      required: true,
+    },
     public: {
       type: Boolean,
       default: false,
