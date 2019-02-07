@@ -7,6 +7,7 @@
       <v-flex xs12 md8 v-if="id">
         <edit-induct v-if="edit" />
         <stat-induct v-else-if="stat" />
+        <comp-induct v-else-if="hasPerm(`inductions.${id}.inductor`)" />
         <view-induct v-else />
       </v-flex>
     </v-layout>
@@ -19,6 +20,7 @@ import editInduct from './components/inductions/edit-inductions.vue';
 import listInduct from './components/inductions/list-inductions.vue';
 import viewInduct from './components/inductions/view-inductions.vue';
 import statInduct from './components/inductions/stat-inductions.vue';
+import compInduct from './components/inductions/comp-inductions.vue';
 
 export default {
   components: {
@@ -26,6 +28,7 @@ export default {
     listInduct,
     viewInduct,
     statInduct,
+    compInduct,
   },
   data() {
     return {};
@@ -44,6 +47,7 @@ export default {
   },
   async mounted() {
     await this.find({ query: { groupId: this.currentGroup._id } });
+    this.setCurrent(this.id);
   },
   watch: {
     id(v) { this.setCurrent(v); },

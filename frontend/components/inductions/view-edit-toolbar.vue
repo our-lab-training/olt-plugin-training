@@ -70,7 +70,7 @@
       </v-btn>
       <span>Save</span>
     </v-tooltip>
-    <v-tooltip v-if="!edit" top>
+    <!-- <v-tooltip v-if="!edit" top>
       <v-btn
         slot="activator"
         flat icon
@@ -79,7 +79,7 @@
         <v-icon>fal fa-sync {{isGetPending ? 'fa-spin' : ''}}</v-icon>
       </v-btn>
       <span>Refresh</span>
-    </v-tooltip>
+    </v-tooltip> -->
     <v-dialog v-model="del" persistent max-width="300">
       <v-card>
         <v-card-title class="headline">

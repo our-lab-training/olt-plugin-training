@@ -48,6 +48,7 @@ export default {
     'completed-inductions': {
       instanceDefaults: {
         list: [],
+        userIds: [],
       },
     },
   },
