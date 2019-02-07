@@ -72,11 +72,12 @@
           <span>Add Section</span>
         </v-btn>
         <v-flex xs12>
-          <v-list three-line hover>
+          <v-list three-line hover expand>
             <v-list-group
               v-for="(s, i) in rand && induction.list"
               :key="i"
               @click.self.stop=""
+              :value="true"
             >
               <v-list-tile slot="activator">
                 <v-list-tile-content @click.stop="item = s; itemAddTo = null; itemDialog = true;">
