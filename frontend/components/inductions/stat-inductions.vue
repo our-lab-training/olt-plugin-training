@@ -3,7 +3,6 @@
     <ve-toolbar
       :induction="induction"
       :loading="loading"
-      @save="save"
     />
     <v-container grid-list-xs>
       <v-layout row wrap align-center v-if="inductId !== 'new'">
