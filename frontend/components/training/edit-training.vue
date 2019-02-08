@@ -46,9 +46,9 @@
             <v-list-tile
               v-for="(s, i) in sortBy(training.steps, 'index')"
               :key="i"
-              @click="step = s; stepDialog = true;"
+              @click.stop=""
             >
-              <v-list-tile-content>
+              <v-list-tile-content @click="step = s; stepDialog = true;">
                 <v-list-tile-title v-text="s.name" />
                 <v-list-tile-sub-title>
                   Type: {{
@@ -145,7 +145,10 @@
                 v-model="step.docId"
                 @input="
                   const item = binder.items.find(i=>i._id === $event);
-                  step.name = `Review ${item.data.name}`;
+                  step.name =
+                    `${
+                      item.type === 'content' ? 'Review' : 'Complete'
+                    } ${item.data.name}`;
                   step.docType = item.type;
                 "
               >

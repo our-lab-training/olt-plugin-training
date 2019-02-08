@@ -1,4 +1,5 @@
 import perms from '../perms';
+import store from '@/store';
 
 export default {
   ref: 'training',
@@ -52,5 +53,11 @@ export default {
       },
     },
   },
-  perms,
+  perms: groupId => [
+    ...perms(groupId),
+    ...store.getters['inductions/find']({ query: { groupId } }).data.map(ind => ({
+      text: `Inductions - Induct ${ind.name}`,
+      value: `inductions.${ind._id}.inductor`,
+    })),
+  ],
 };
