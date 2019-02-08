@@ -2,8 +2,10 @@
 const createService = require('feathers-mongoose');
 const createModel = require('../../models/inductions.model');
 const hooks = require('./inductions.hooks');
+const perms = require('./inductions.perms');
 
 module.exports = function (app) {
+  perms(app);
   const Model = createModel(app);
   const paginate = app.get('paginate');
 
