@@ -1,5 +1,5 @@
-import perms from '../perms';
 import store from '@/store';
+import perms from '../perms';
 
 export default {
   ref: 'training',
@@ -53,11 +53,42 @@ export default {
       },
     },
   },
-  perms: groupId => [
-    ...perms(groupId),
-    ...store.getters['inductions/find']({ query: { groupId } }).data.map(ind => ({
-      text: `Inductions - Induct ${ind.name}`,
-      value: `inductions.${ind._id}.inductor`,
-    })),
-  ],
+  perms: (groupId) => {
+    const inductions = store.getters['inductions/find']({ query: { groupId } }).data;
+    const trainings = store.getters['trainings/find']({ query: { groupId } }).data;
+    return [
+      ...perms(groupId),
+      ...inductions.map(ind => ({
+        text: `Inductions - Induct ${ind.name}`,
+        value: `inductions.${ind._id}.inductor`,
+      })),
+      ...inductions.map(ind => ({
+        text: `Inductions - Completed ${ind.name}`,
+        value: `inductions.${ind._id}.complete`,
+        readonly: true,
+      })),
+      ...trainings.map(train => ({
+        text: `Training - Completed ${train.name}`,
+        value: `trainings.${train._id}.complete`,
+        readonly: true,
+      })),
+      ...trainings.reduce((a, train) => [...a, ...train.steps.reduce((b, step) => {
+        if (!step.required) return b;
+        if (
+          step.type === 'comment-link'
+          || (
+            step.type === 'doc'
+            && step.docType === 'content'
+          )
+        ) {
+          b.push({
+            text: `Training - Accepted ${step.name} From ${train.name}`,
+            value: `trainings.${step._id}.accept`,
+            readonly: true,
+          });
+        }
+        return b;
+      }, [])], []),
+    ];
+  },
 };
