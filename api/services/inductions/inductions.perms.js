@@ -1,4 +1,4 @@
-const checkPerm = require('../../../../lib/checkPerm');
+const checkPerm = require('../../../../../lib/checkPerm');
 
 module.exports = (app) => {
   app.perms.addPermListener('inductions.*.inductor', async (context, perm) => {
