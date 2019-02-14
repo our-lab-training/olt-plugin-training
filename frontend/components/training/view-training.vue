@@ -141,7 +141,7 @@ export default {
     this.setTrain();
   },
   watch: {
-    id() {
+    bindId() {
       this.setTrain();
     },
   },
