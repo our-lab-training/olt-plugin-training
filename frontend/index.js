@@ -26,7 +26,7 @@ export default {
       icon: 'fal fa-clipboard-list-check',
       priority: 110,
       visiblePerms: [
-        '{groupId}.inductions.inductor',
+        '{groupId}.inductions.read',
       ],
     },
   },
