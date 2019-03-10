@@ -8,10 +8,10 @@ export default {
   // settingsLink: '/group/{groupId}/training/settings',
   routes: {
     training: {
-      name: 'My Training',
+      name: 'Training',
       entry: true,
       component: () => import('./training.vue'),
-      path: '/group/{groupId}/training/:bindId?',
+      path: '/org/{groupId}/training/:bindId?',
       icon: 'fal fa-graduation-cap',
       priority: 110,
       visiblePerms: [
@@ -22,7 +22,7 @@ export default {
       name: 'Inductions',
       entry: true,
       component: () => import('./inductions.vue'),
-      path: '/group/{groupId}/inductions/:inductId?',
+      path: '/org/{groupId}/inductions/:inductId?',
       icon: 'fal fa-clipboard-list-check',
       priority: 110,
       visiblePerms: [
