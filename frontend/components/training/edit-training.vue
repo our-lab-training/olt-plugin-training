@@ -76,28 +76,24 @@
                 </v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>
-                <v-btn flat icon v-if="s.index - 1 > -1">
-                  <v-icon
-                    @click.stop="swap(s.index-1, s.index)"
-                    small
-                  >fal fa-arrow-up</v-icon>
+                <v-btn flat icon v-if="s.index - 1 > -1" @click.stop="swap(s.index-1, s.index)">
+                  <v-icon small>fal fa-arrow-up</v-icon>
                 </v-btn>
                 <span v-else>&nbsp;</span>
                 <v-menu offset-y>
-                  <v-btn flat icon slot="activator"><v-icon small>fal fa-times</v-icon></v-btn>
+                  <v-btn flat icon slot="activator"><v-icon small>fal fa-trash</v-icon></v-btn>
                   <v-list>
                     <v-list-tile @click="stepDelete(s.index)">
                       <v-list-tile-title class="error--text">
-                        <v-icon class="error--text" size="20px" left>fal fa-trash</v-icon> Remove
+                        <v-icon class="error--text" size="20px" left>
+                          fal fa-exclamation-triangle
+                        </v-icon> Remove
                       </v-list-tile-title>
                     </v-list-tile>
                   </v-list>
                 </v-menu>
-                <v-btn flat icon v-if="s.index + 1 < training.steps.length">
-                  <v-icon
-                    @click.stop="swap(s.index, s.index+1)"
-                    small
-                  >fal fa-arrow-down</v-icon>
+                <v-btn flat icon v-if="s.index + 1 < training.steps.length" @click.stop="swap(s.index, s.index+1)">
+                  <v-icon small>fal fa-arrow-down</v-icon>
                 </v-btn>
                 <span v-else>&nbsp;</span>
               </v-list-tile-action>

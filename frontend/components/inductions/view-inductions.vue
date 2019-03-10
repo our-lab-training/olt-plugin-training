@@ -22,7 +22,7 @@
             </v-list-tile-title>
             <v-list-tile-sub-title>
               <a
-                :href="`mail:${inductor.email}`"
+                :href="`mailto:${inductor.email}`"
                 target="_blank"
               >
                 {{inductor.email}}

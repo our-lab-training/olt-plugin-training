@@ -90,41 +90,35 @@
                 </v-list-tile-content>
                 <v-list-tile-action>
                   <span>&nbsp;</span>
-                  <v-btn flat icon>
-                    <v-icon
-                      @click.stop="
-                        item = {name: '', desc: ''};
-                        itemAddTo = s.children;
-                        itemDialog = true;
-                      "
-                      small
-                    >fal fa-plus</v-icon>
+                  <v-btn
+                    @click.stop="
+                      item = {name: '', desc: ''};
+                      itemAddTo = s.children;
+                      itemDialog = true;
+                    "
+                    flat icon
+                  >
+                    <v-icon small>fal fa-plus</v-icon>
                   </v-btn>
                   <span>&nbsp;</span>
                 </v-list-tile-action>
                 <v-list-tile-action>
-                  <v-btn flat icon v-if="i - 1 > -1">
-                    <v-icon
-                      @click.stop="swap(induction.list, i-1, i)"
-                      small
-                    >fal fa-arrow-up</v-icon>
+                  <v-btn flat icon v-if="i - 1 > -1" @click.stop="swap(induction.list, i-1, i)">
+                    <v-icon small>fal fa-arrow-up</v-icon>
                   </v-btn>
                   <span v-else>&nbsp;</span>
                   <v-menu offset-y>
-                    <v-btn flat icon slot="activator"><v-icon small>fal fa-times</v-icon></v-btn>
+                    <v-btn flat icon slot="activator"><v-icon small>fal fa-trash</v-icon></v-btn>
                     <v-list>
                       <v-list-tile @click="itemDelete(induction.list, i)">
                         <v-list-tile-title class="error--text">
-                          <v-icon class="error--text" size="20px" left>fal fa-trash</v-icon> Remove
+                          <v-icon class="error--text" size="20px" left>fas fa-exclamation-triangle</v-icon> Remove
                         </v-list-tile-title>
                       </v-list-tile>
                     </v-list>
                   </v-menu>
-                  <v-btn flat icon v-if="i + 1 < induction.list.length">
-                    <v-icon
-                      @click.stop="swap(induction.list, i, i+1)"
-                      small
-                    >fal fa-arrow-down</v-icon>
+                  <v-btn flat icon v-if="i + 1 < induction.list.length" @click.stop="swap(induction.list, i, i+1)">
+                    <v-icon small>fal fa-arrow-down</v-icon>
                   </v-btn>
                   <span v-else>&nbsp;</span>
                 </v-list-tile-action>
@@ -139,35 +133,29 @@
                   @click.stop="item = c; itemAddTo = null; itemDialog = true;"
                 >
                   <v-list-tile-title class="subheading">
-                    <v-icon small>fas fa-caret-right</v-icon> {{c.name}}
+                    {{c.name}}
                   </v-list-tile-title>
                   <v-list-tile-sub-title v-if="c.desc">
                     {{c.desc}}
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                  <v-btn flat icon v-if="j - 1 > -1">
-                    <v-icon
-                      @click.stop="swap(s.children, j-1, j)"
-                      small
-                    >fal fa-arrow-up</v-icon>
+                  <v-btn flat icon v-if="j - 1 > -1" @click.stop="swap(s.children, j-1, j)">
+                    <v-icon small>fal fa-arrow-up</v-icon>
                   </v-btn>
                   <span v-else>&nbsp;</span>
                   <v-menu offset-y>
-                    <v-btn flat icon slot="activator"><v-icon small>fal fa-times</v-icon></v-btn>
+                    <v-btn flat icon slot="activator"><v-icon small>fal fa-trash</v-icon></v-btn>
                     <v-list>
                       <v-list-tile @click="itemDelete(s.children, j)">
                         <v-list-tile-title class="error--text">
-                          <v-icon class="error--text" size="20px" left>fal fa-trash</v-icon> Remove
+                          <v-icon class="error--text" size="20px" left>fal fa-exclamation-triangle</v-icon> Remove
                         </v-list-tile-title>
                       </v-list-tile>
                     </v-list>
                   </v-menu>
-                  <v-btn flat icon v-if="j + 1 < s.children.length">
-                    <v-icon
-                      @click.stop="swap(s.children, j, j+1)"
-                      small
-                    >fal fa-arrow-down</v-icon>
+                  <v-btn flat icon v-if="j + 1 < s.children.length" @click.stop="swap(s.children, j, j+1)">
+                    <v-icon small>fal fa-arrow-down</v-icon>
                   </v-btn>
                   <span v-else>&nbsp;</span>
                 </v-list-tile-action>
