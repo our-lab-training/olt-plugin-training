@@ -2,12 +2,14 @@
   <v-container grid-list-md>
     <v-layout row wrap justify-center>
       <v-flex xs12 :md4="id" :md6="!id" v-if="!id || this.$vuetify.breakpoint.mdAndUp">
-        <list-induct />
+        <list-induct label="My Inductions" filter="inductee"/>
+        &nbsp;
+        <list-induct label="Give Inductions" filter="inductor"/>
       </v-flex>
       <v-flex xs12 md8 v-if="id">
         <edit-induct v-if="edit" />
         <stat-induct v-else-if="stat" />
-        <comp-induct v-else-if="hasPerm(`inductions.${id}.inductor`)" />
+        <comp-induct v-else-if="hasPerm(`inductions.${id}.inductor`, true)" />
         <view-induct v-else />
       </v-flex>
     </v-layout>

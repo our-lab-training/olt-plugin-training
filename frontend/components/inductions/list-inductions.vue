@@ -1,7 +1,7 @@
 <template>
-  <v-card>
+  <v-card v-if="writePerm || inducts.filter(i => !filter || i.filter === filter).length">
     <v-toolbar dense class="induction-list">
-      <v-toolbar-title>My Inductions</v-toolbar-title>
+      <v-toolbar-title>{{label}}</v-toolbar-title>
       <v-spacer />
       <v-flex shrink>
         <v-text-field
@@ -23,7 +23,7 @@
     </v-toolbar>
     <v-list three-line>
       <v-list-tile
-        v-for="induct in inducts"
+        v-for="induct in inducts.filter(i => !filter || i.filter === filter)"
         :key="induct._id"
         :to="`./${induct._id}`"
       >
@@ -69,6 +69,10 @@
 import { mapGetters } from 'vuex';
 
 export default {
+  props: {
+    label: { type: String, default: 'Inductions' },
+    filter: { type: String, default: undefined },
+  },
   data() {
     return {
       search: '',
@@ -92,6 +96,7 @@ export default {
       return this.findInduct({ query }).data.map(induct => ({
         ...induct,
         complete: this.hasPerm(`inductions.${induct._id}.complete`, true),
+        filter: this.hasPerm(`inductions.${induct._id}.inductor`, true) ? 'inductor' : 'inductee',
       }));
     },
   },
