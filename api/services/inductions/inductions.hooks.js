@@ -9,9 +9,9 @@ module.exports = {
     find: [],
     get: [],
     create: [restrictMethod(['{data.groupId}.inductions.write'])],
-    update: [restrictMethod(['{data.groupId}.inductions.write'])],
-    patch: [restrictMethod(['{data.groupId}.inductions.write'])],
-    remove: [restrictMethod(['{data.groupId}.inductions.write']), safeRemove()]
+    update: [restrictMethod(['{existing.groupId}.inductions.write'])],
+    patch: [restrictMethod(['{existing.groupId}.inductions.write'])],
+    remove: [restrictMethod(['{existing.groupId}.inductions.write']), safeRemove()]
   },
 
   after: {
