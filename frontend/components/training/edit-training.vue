@@ -59,9 +59,12 @@
                 </v-list-tile-sub-title>
                 <v-list-tile-sub-title v-if="s.type === 'doc'">
                   {{
-                    (binder.items.find(i => i._id === s.docId) || {}).catName
+                    getItem(s.docId).catName
                   }} -> {{
-                    (binder.items.find(i => i._id === s.docId) || {data: {} }).data.name
+                    getItem(s.docId).type === 'content'
+                    && supportedFiles[getItem(s.docId).data.type].hideExt
+                      ? getItem(s.docId).data.filename.replace(/\.[\w-]+$/, '')
+                      : getItem(s.docId).data.name
                   }}
                 </v-list-tile-sub-title>
                 <v-list-tile-sub-title v-if="s.type === 'perm-timout'">
@@ -92,7 +95,11 @@
                     </v-list-tile>
                   </v-list>
                 </v-menu>
-                <v-btn flat icon v-if="s.index + 1 < training.steps.length" @click.stop="swap(s.index, s.index+1)">
+                <v-btn
+                  flat icon
+                  v-if="s.index + 1 < training.steps.length"
+                  @click.stop="swap(s.index, s.index+1)"
+                >
                   <v-icon small>fal fa-arrow-down</v-icon>
                 </v-btn>
                 <span v-else>&nbsp;</span>
@@ -144,13 +151,33 @@
                   step.name =
                     `${
                       item.type === 'content' ? 'Review' : 'Complete'
-                    } ${item.data.name}`;
+                    } ${item.data.name.replace(/\.[\w-]+$/, '')}`;
                   step.docType = item.type;
                 "
               >
                 <template slot="item" slot-scope="data">
                   <v-list-tile-content>
-                    <v-list-tile-title>{{data.item.data.name}}</v-list-tile-title>
+                    <v-list-tile-title>
+                      {{
+                        data.item.type === 'content'
+                        && supportedFiles[data.item.data.type].hideExt
+                          ? data.item.data.filename.replace(/\.[\w-]+$/, '')
+                          : data.item.data.name
+                      }}
+                    </v-list-tile-title>
+                    <v-list-tile-sub-title>{{data.item.catName}}</v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </template>
+                <template slot="selection" slot-scope="data">
+                  <v-list-tile-content>
+                    <v-list-tile-title>
+                      {{
+                        data.item.type === 'content'
+                        && supportedFiles[data.item.data.type].hideExt
+                          ? data.item.data.filename.replace(/\.[\w-]+$/, '')
+                          : data.item.data.name
+                      }}
+                    </v-list-tile-title>
                     <v-list-tile-sub-title>{{data.item.catName}}</v-list-tile-sub-title>
                   </v-list-tile-content>
                 </template>
@@ -232,6 +259,7 @@ import set from 'lodash/set';
 import sortBy from 'lodash/sortBy';
 import veToolbar from './view-edit-toolbar.vue';
 import types from '../../../types';
+import supportedFiles from '../../../../content/supportedFiles';
 
 export default {
   components: {
@@ -244,6 +272,7 @@ export default {
       stepDialog: false,
       step: { required: true },
       types,
+      supportedFiles,
     };
   },
   computed: {
@@ -262,6 +291,9 @@ export default {
         i.catName = (type.cats.find(c => c.value === i.category) || {}).text;
       });
       return bind;
+    },
+    getItem() {
+      return docId => (this.binder.items.find(i => i._id === docId) || { data: { name: '' } });
     },
     otherTrains() {
       return this.findTrain({
