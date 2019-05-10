@@ -11,7 +11,7 @@
       <span>Back</span>
     </v-tooltip>
     <v-toolbar-title>
-      {{id === 'new' ? 'New Induction' : induction.name}}
+      {{id === 'new' ? 'New Induction' : induction && induction.name}}
     </v-toolbar-title>
     <v-spacer />
     <v-tooltip v-if="writePerm" top>
