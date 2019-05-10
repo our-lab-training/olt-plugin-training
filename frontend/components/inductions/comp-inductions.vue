@@ -5,7 +5,7 @@
     />
     <v-card-text>
       <report-error :error="err" />
-      <v-layout row wrap justify-center v-if="!comp">
+      <v-layout row wrap justify-center v-if="!comp || !begun">
         <v-btn
           color="success"
           @click.stop="begin"
@@ -15,7 +15,7 @@
       </v-layout>
       <v-layout row wrap v-else>
         <v-flex xs12 v-if="induction.desc">
-          {{induction.desc}}
+          <md-viewer :value="induction.desc"/>
         </v-flex>
         <v-flex xs12>
           <h2 class="title">Checklist</h2>
@@ -26,7 +26,7 @@
         </v-flex>
       </v-layout>
     </v-card-text>
-    <v-list two-line expand v-if="comp">
+    <v-list two-line expand v-if="comp && begun">
       <v-list-group
         :value="true"
         v-for="(section, i) in comp.list"
@@ -34,7 +34,7 @@
         no-action
       >
         <v-list-tile slot="activator">
-          <v-list-tile-content>
+          <v-list-tile-content @click.stop="showMore(i, -1)">
             <v-list-tile-title>
               {{i+1}}. {{section.name}}
             </v-list-tile-title>
@@ -46,8 +46,12 @@
         <v-list-tile
           v-for="(child, j) in section.children"
           :key="j"
+          @click="Math.random()"
         >
-          <v-list-tile-content>
+          <v-list-tile-content
+            @click.left="showMore(i, j)"
+            @click.right.prevent="child.checked = !child.checked"
+          >
             <v-list-tile-title>
               {{child.name}}
             </v-list-tile-title>
@@ -61,7 +65,7 @@
         </v-list-tile>
       </v-list-group>
     </v-list>
-    <v-card-text v-if="comp">
+    <v-card-text v-if="comp && begun">
       <v-layout row wrap>
         <v-flex>
           <h2 class="title">Inducted Users</h2>
@@ -81,7 +85,68 @@
         </v-flex>
       </v-layout>
     </v-card-text>
-    <v-dialog v-model="userDialog" persistent max-width="500px">
+    <v-dialog v-model="showMoreData.dialog" persistent max-width="500">
+      <v-card>
+        <span
+          v-shortkey.once="['arrowdown']"
+          @shortkey="showMoreData.dialog && showMore(showMoreData.i, showMoreData.j+1, true)"
+        />
+        <span
+          v-shortkey.once="['arrowright']"
+          @shortkey="showMoreData.dialog && showMore(showMoreData.i, showMoreData.j+1, true)"
+        />
+        <span
+          v-shortkey.once="['arrowup']"
+          @shortkey="showMoreData.dialog && showMore(showMoreData.i, showMoreData.j-1)"
+        />
+        <span
+          v-shortkey.once="['arrowleft']"
+          @shortkey="showMoreData.dialog && showMore(showMoreData.i, showMoreData.j-1)"
+        />
+        <v-card-title class="headline">{{showMoreData.item.name}}</v-card-title>
+        <v-card-text>
+          <md-viewer :value="showMoreData.item.desc"/>
+        </v-card-text>
+        <v-card-actions>
+          <v-tooltip top>
+            <v-btn
+              slot="activator"
+              icon flat
+              @click="showMore(showMoreData.i, showMoreData.j - 1)"
+            >
+              <v-icon>far fa-arrow-left</v-icon>
+            </v-btn>
+            <span>Up or Left Arrow Key</span>
+          </v-tooltip>
+          <v-spacer></v-spacer>
+          <v-btn flat @click="showMore()">Close</v-btn>
+          <v-tooltip top v-if="!showMoreData.item.checked">
+            <v-btn
+              slot="activator"
+              color="success" flat
+              @click="showMore(showMoreData.i, showMoreData.j + 1, true)"
+            >
+              {{!showMoreData.isSection ? 'Mark Done and' : ''}} Next
+            </v-btn>
+            <span>Down or Right Arrow Key</span>
+          </v-tooltip>
+          <v-btn
+            v-if="!showMoreData.isSection && showMoreData.item.checked"
+            color="error" flat
+            @click="showMoreData.item.checked = false; showMore()"
+          >
+            Mark Undone
+          </v-btn>
+          <v-btn
+            icon flat
+            @click="showMore(showMoreData.i, showMoreData.j + 1)"
+          >
+            <v-icon>far fa-arrow-right</v-icon>
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="userDialog" max-width="500px">
       <v-card>
         <v-card-title>
           <div>
@@ -128,7 +193,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-card-actions v-if="comp">
+    <v-card-actions v-if="comp && begun">
       <v-spacer/>
       <v-btn
         color="success" flat
@@ -153,12 +218,14 @@
 <script>
 import { mapGetters, mapState } from 'vuex';
 import reportError from '@/views/partials/report-error.vue';
+import mdViewer from '@/views/partials/md-viewer.vue';
 import veToolbar from './view-edit-toolbar.vue';
 
 export default {
   components: {
     veToolbar,
     reportError,
+    mdViewer,
   },
   data() {
     return {
@@ -170,6 +237,7 @@ export default {
       success: '',
       err: null,
       loginErr: '',
+      showMoreData: { item: {} },
     };
   },
   computed: {
@@ -182,6 +250,7 @@ export default {
     userValid() {
       return /^\d{8}$/.test(this.user.username) && this.user.password && this.user.agree;
     },
+    begun() { return typeof this.$route.query.begun !== 'undefined'; },
   },
   methods: {
     begin() {
@@ -194,6 +263,7 @@ export default {
         })),
         inductId: this.inductId,
       });
+      this.$router.push('?begun');
     },
     resetUser() { this.user = { username: '', password: '', agree: false }; },
     async addUser() {
@@ -223,6 +293,24 @@ export default {
         console.error(err);
         this.err = err;
       }
+    },
+    showMore(i = -1, j = -1, checked) {
+      if (typeof checked !== 'undefined') this.showMoreData.item.checked = checked;
+      if (j === -2) {
+        i -= 1;
+        j = this.comp.list[i] && this.comp.list[i].children.length - 1;
+      }
+      const isSection = this.comp.list[i] && !this.comp.list[i].children[j];
+      if (isSection && j > -1) i += 1;
+      this.showMoreData = !this.comp.list[i]
+        ? { item: {}, dialog: false }
+        : {
+          i,
+          j: !isSection ? j : -1,
+          isSection,
+          item: isSection ? this.comp.list[i] : this.comp.list[i].children[j],
+          dialog: true,
+        };
     },
   },
 };

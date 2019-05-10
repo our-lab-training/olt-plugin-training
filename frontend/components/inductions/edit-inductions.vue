@@ -30,13 +30,9 @@
             @change="induction.published = $event ? new Date() : null;"
           />
         </v-flex>
-        <v-flex xs12 v-if="inductId !== 'new'">
-          <v-textarea
-            label="Description"
-            note="optional"
-            persistent-hint
-            v-model="induction.desc"
-          />
+        <v-flex xs12 v-if="inductId !== 'new'" style="min-height: 300px">
+          <span>Description (optional)</span>
+          <md-editor v-model="induction.desc" />
         </v-flex>
         <v-flex xs12 sm6 v-if="inductId !== 'new'">
           <v-switch
@@ -84,7 +80,7 @@
                   <v-list-tile-title class="title">
                     {{i+1}}. {{s.name}}
                   </v-list-tile-title>
-                  <v-list-tile-sub-title v-if="s.desc">
+                  <v-list-tile-sub-title v-if="s.desc" class="text-truncate">
                     {{s.desc}}
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
@@ -112,12 +108,19 @@
                     <v-list>
                       <v-list-tile @click="itemDelete(induction.list, i)">
                         <v-list-tile-title class="error--text">
-                          <v-icon class="error--text" size="20px" left>fas fa-exclamation-triangle</v-icon> Remove
+                          <v-icon class="error--text" size="20px" left>
+                            fas fa-exclamation-triangle
+                          </v-icon>
+                          Remove
                         </v-list-tile-title>
                       </v-list-tile>
                     </v-list>
                   </v-menu>
-                  <v-btn flat icon v-if="i + 1 < induction.list.length" @click.stop="swap(induction.list, i, i+1)">
+                  <v-btn
+                    flat icon
+                    v-if="i + 1 < induction.list.length"
+                    @click.stop="swap(induction.list, i, i+1)"
+                  >
                     <v-icon small>fal fa-arrow-down</v-icon>
                   </v-btn>
                   <span v-else>&nbsp;</span>
@@ -135,7 +138,7 @@
                   <v-list-tile-title class="subheading">
                     {{c.name}}
                   </v-list-tile-title>
-                  <v-list-tile-sub-title v-if="c.desc">
+                  <v-list-tile-sub-title v-if="c.desc" class="text-truncate">
                     {{c.desc}}
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
@@ -149,12 +152,19 @@
                     <v-list>
                       <v-list-tile @click="itemDelete(s.children, j)">
                         <v-list-tile-title class="error--text">
-                          <v-icon class="error--text" size="20px" left>fal fa-exclamation-triangle</v-icon> Remove
+                          <v-icon class="error--text" size="20px" left>
+                            fal fa-exclamation-triangle
+                          </v-icon>
+                          Remove
                         </v-list-tile-title>
                       </v-list-tile>
                     </v-list>
                   </v-menu>
-                  <v-btn flat icon v-if="j + 1 < s.children.length" @click.stop="swap(s.children, j, j+1)">
+                  <v-btn
+                    flat icon
+                    v-if="j + 1 < s.children.length"
+                    @click.stop="swap(s.children, j, j+1)"
+                  >
                     <v-icon small>fal fa-arrow-down</v-icon>
                   </v-btn>
                   <span v-else>&nbsp;</span>
@@ -175,7 +185,7 @@
     <v-dialog
       v-model="itemDialog"
       persistent
-      max-width="500px"
+      max-width="700px"
     >
       <v-card>
         <v-card-title>
@@ -191,13 +201,9 @@
                 v-model="item.name"
               />
             </v-flex>
-            <v-flex xs12>
-              <v-textarea
-                label="Description"
-                note="optional"
-                persistent-hint
-                v-model="item.desc"
-              />
+            <v-flex xs12 style="min-height: 300px">
+              <span>Description (optional)</span>
+              <md-editor v-model="item.desc" />
             </v-flex>
           </v-layout>
         </v-container>
@@ -223,6 +229,7 @@ import set from 'lodash/set';
 import sortBy from 'lodash/sortBy';
 import reportError from '@/views/partials/report-error.vue';
 import managePerm from '@/views/partials/manage-perm.vue';
+import mdEditor from '@/views/partials/md-editor.vue';
 import veToolbar from './view-edit-toolbar.vue';
 import defaultInductions from './default-inductions';
 
@@ -231,6 +238,7 @@ export default {
     veToolbar,
     reportError,
     managePerm,
+    mdEditor,
   },
   data() {
     return {
