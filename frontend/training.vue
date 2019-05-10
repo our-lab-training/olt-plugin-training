@@ -2,6 +2,26 @@
   <v-container grid-list-md>
     <v-layout row wrap justify-center>
       <v-flex xs12 :md4="id" :md6="!id" v-if="!id || this.$vuetify.breakpoint.mdAndUp">
+        <v-card>
+          <v-toolbar dense>
+            <v-toolbar-title>
+              Training
+            </v-toolbar-title>
+          </v-toolbar>
+          <v-card-text>
+            <p>
+              Bellow is a list of the training modules you will need to
+              complete in order to use/undertake the relative
+              task, tool, or workspace.
+            </p>
+            <p>
+              Click on one of the modules to see the list of tasks required
+              to complete the training. Clicking on a task will take you to
+              the relevant information, you can then click back to return here.
+            </p>
+          </v-card-text>
+        </v-card>
+        &nbsp;
         <list-train />
       </v-flex>
       <v-flex xs12 md8 v-if="id">

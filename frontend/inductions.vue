@@ -2,6 +2,25 @@
   <v-container grid-list-md>
     <v-layout row wrap justify-center>
       <v-flex xs12 :md4="id" :md6="!id" v-if="!id || this.$vuetify.breakpoint.mdAndUp">
+        <v-card>
+          <v-toolbar dense>
+            <v-toolbar-title>
+              Inductions
+            </v-toolbar-title>
+          </v-toolbar>
+          <v-card-text>
+            <p>
+              Bellow is a list of the in-person inductions that you
+              will need to complete as a part of training.
+              Click on one of the inductions to see more details.
+            </p>
+            <p>
+              To see the full list of requirements to become trained, go to
+              <router-link to="../training">Training</router-link>.
+            </p>
+          </v-card-text>
+        </v-card>
+        &nbsp;
         <list-induct label="My Inductions" filter="inductee"/>
         &nbsp;
         <list-induct label="Give Inductions" filter="inductor"/>
