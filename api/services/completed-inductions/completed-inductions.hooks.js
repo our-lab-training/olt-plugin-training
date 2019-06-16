@@ -10,7 +10,7 @@ const validateUsers = require('../../hooks/validate-users');
 const addInductionPerm = require('../../hooks/add-induction-perm');
 
 const filterByAccess = ctx => {
-  if (!ctx.params.query.$and || !ctx.params.user) return ctx;
+  if (!ctx.params.query || !ctx.params.query.$and || !ctx.params.user) return ctx;
   const groups = ctx.params.query.$and.pop();
   const inductIds = _.uniq(ctx.params.user.perms.all.reduce((a, perm) => {
     const match = comparePerm('inductions.*.inductor', perm, false);

@@ -11,6 +11,7 @@ module.exports = function (options = {}) {
     const paginate = app.get('paginate');
 
     const checkComplete = async (item) => {
+      item.binder = await app.service('binders').get(item.bindId);
       await Promise.all(item.steps.map(async (step) => {
         if (!step.required) return;
         let query = { perm: step.perm, grantee: params.user._id, $limit: 0 };
@@ -20,7 +21,7 @@ module.exports = function (options = {}) {
           query.perm = ['trainings', `${step._id}`, 'accept'];
         } else if(step.type === 'doc') {
           if (step.docType === 'content') query.perm = ['trainings', `${step._id}`, 'accept'];
-          else query.perm = [step.docType, `${step.docId}`, 'complete'];
+          else query.perm = [step.docType, `${(item.binder.items.find(i => `${i._id}` === `${step.docId}`) || {}).itemId}`, 'complete'];
         } else return;
         const { total } = await app.service('perms').find({ query, paginate });
         if (total) step.complete = true;
