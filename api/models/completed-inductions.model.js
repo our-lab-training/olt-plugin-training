@@ -9,6 +9,8 @@ module.exports = function (app) {
   const completedInductions = DefaultSchema(app);
   completedInductions.add({
     inductId: ObjectIdType('inductions', app),
+    proofId: ObjectIdType('content', app, false),
+    proofMd: String,
     userIds: [ObjectIdType('users', app)],
     list: [{
       name: nameType(),

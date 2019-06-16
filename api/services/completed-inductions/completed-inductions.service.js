@@ -19,4 +19,5 @@ module.exports = function (app) {
   const service = app.service('completed-inductions');
 
   service.hooks(hooks);
+
 };

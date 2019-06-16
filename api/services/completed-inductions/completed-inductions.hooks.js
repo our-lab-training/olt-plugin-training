@@ -8,6 +8,7 @@ const filterByGroup = require('../../../../../hooks/filter-by-group');
 const comparePerm = require('../../../../../lib/comparePerm');
 const validateUsers = require('../../hooks/validate-users');
 const addInductionPerm = require('../../hooks/add-induction-perm');
+const inductionProof = require('../../hooks/induction-proof');
 
 const filterByAccess = ctx => {
   if (!ctx.params.query || !ctx.params.query.$and || !ctx.params.user) return ctx;
@@ -39,18 +40,21 @@ module.exports = {
       restrictMethod(['inductions.{data.inductId}.inductor', '{data.groupId}.inductions.inductor', '{data.groupId}.inductions.write']),
       discard('userIds'),
       validateUsers(),
+      inductionProof(),
     ],
     update: [
       restrictMethod(['inductions.{data.inductId}.inductor', '{data.groupId}.inductions.inductor']),
       iff(cont => cont.existing && cont.existing.done, disallow('external')),
       discard(['userIds', 'groupId']),
       validateUsers(),
+      inductionProof(),
     ],
     patch: [
       restrictMethod(['inductions.{data.inductId}.inductor', '{data.groupId}.inductions.inductor']),
       iff(cont => cont.existing && cont.existing.done, disallow('external')),
       discard(['userIds', 'groupId']),
       validateUsers(),
+      inductionProof(),
     ],
     remove: [
       restrictMethod('superadmin.inductions.remove'),
