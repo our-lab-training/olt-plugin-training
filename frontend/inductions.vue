@@ -57,18 +57,24 @@ export default {
   computed: {
     ...mapGetters('users', { hasPerm: 'hasPerm', currentUser: 'current' }),
     ...mapGetters('groups', { currentGroup: 'current' }),
+    ...mapGetters('inductions', { findLocalInducts: 'find' }),
     id() { return this.$route.params.inductId; },
     writePerm() { return this.hasPerm(`${this.currentGroup._id}.inductions.write`); },
     edit() { return this.writePerm && (typeof this.$route.query.edit !== 'undefined' || this.id === 'new'); },
     stat() { return this.writePerm && typeof this.$route.query.stats !== 'undefined'; },
   },
   methods: {
-    ...mapActions('inductions', ['find']),
+    ...mapActions('inductions', { findInducts: 'find' }),
+    ...mapActions('completed-inductions', { findComps: 'find' }),
     ...mapMutations('inductions', ['setCurrent']),
   },
   async mounted() {
-    await this.find({ query: { groupId: this.currentGroup._id } });
-    this.setCurrent(this.id);
+    await this.findInducts({ query: { groupId: this.currentGroup._id } });
+    const inductIds = this.findLocalInducts().data.map(ind => ind._id);
+    await this.findComps({
+      query: { inductId: { $in: inductIds } },
+    });
+    if (inductIds.includes(this.id)) this.setCurrent(this.id);
   },
   watch: {
     id(v) { this.setCurrent(v); },
