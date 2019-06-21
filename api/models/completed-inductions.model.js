@@ -28,6 +28,13 @@ module.exports = function (app) {
       default: false,
       required: true,
     },
+    completedAt: {
+      type: Date,
+      default: Date.now,
+      required: true,
+    },
+    inductorName: nameType(false),
+    inductorId: ObjectIdType('users', app, false),
   });
 
   return mongooseClient.model('completed-inductions', completedInductions);

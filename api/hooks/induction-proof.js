@@ -29,7 +29,7 @@ const ensurePath = async (context, groupId, path) => {
   const name = folders.pop();
   let parent;
   if (folders.length) parent = await ensurePath(context, groupId, folders.join('/'));
-  else parent = (await content.find({ query: { groupId, name: '.directory', parentId: {$exists: false} } }))[0]._id;
+  else parent = (await content.find({ query: { groupId, name: '.directory', parent: {$exists: false} } }))[0]._id;
 
   let folder = (await content.find({ query: { groupId, parent, name } }))[0];
   if (!folder) folder = await content.create({ groupId, parent, name, type: 'text/x-directory', ext: 'directory' });
@@ -44,8 +44,8 @@ const inductionProof = async (context, item) => {
   const { app } = context;
   const induction = await app.service('inductions').get(item.inductId);
   const users = await app.service('users').find({ query: { _id: { $in: item.userIds } }, paginate: false });
-  const inductor = await app.service('users').get(item.createdBy);
-  const parent = await ensurePath(context, induction.groupId, `.inductions/${item.inductId}/proof`);
+  const inductor = await app.service('users').get(item.inductorId || item.createdBy);
+  const parent = await ensurePath(context, induction.groupId, `Inductions/${item.inductId}/proof`);
   const proof = await app.service('content').create({
     groupId: induction.groupId,
     parent,
@@ -53,7 +53,7 @@ const inductionProof = async (context, item) => {
     type: 'application/pdf',
     ext: 'pdf',
   });
-  const date = new Date(item.createdAt);
+  const date = new Date(item.completedAt || item.createdAt);
   item.proofMd = `
 # In-Person Induction Record - ${induction.name}
 This document is automatically generated upon the completion of an induction and serves as proof that the induction took place.

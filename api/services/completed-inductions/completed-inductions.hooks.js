@@ -1,11 +1,12 @@
 
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { iff, disallow, discard } = require('feathers-hooks-common');
+const { iff, disallow, discard, isProvider, alterItems } = require('feathers-hooks-common');
 const _ = require('lodash');
 const restrictMethod = require('../../../../../hooks/restrict-method');
 const safeRemove = require('../../../../../hooks/safe-remove');
 const filterByGroup = require('../../../../../hooks/filter-by-group');
 const comparePerm = require('../../../../../lib/comparePerm');
+const checkPerm = require('../../../../../lib/checkPerm');
 const validateUsers = require('../../hooks/validate-users');
 const addInductionPerm = require('../../hooks/add-induction-perm');
 const inductionProof = require('../../hooks/induction-proof');
@@ -38,21 +39,42 @@ module.exports = {
     ],
     create: [
       restrictMethod(['inductions.{data.inductId}.inductor', '{data.groupId}.inductions.inductor', '{data.groupId}.inductions.write']),
-      discard('userIds'),
-      validateUsers(),
-      inductionProof(),
+      iff(
+        ctx => !checkPerm(`${ctx.data.groupId}.inductions.write`, ctx.params.user) || !ctx.data.proofId,
+        [
+          iff(
+            isProvider('external'),
+            [
+              discard('userIds', 'proofId', 'proofMd', 'completedAt', 'inductorName', 'inductorId'),
+              alterItems((item, ctx) => item.inductorId = ctx.params.user._id),
+            ],
+          ),
+          validateUsers(),
+          inductionProof(),
+        ],
+      ),
     ],
     update: [
       restrictMethod(['inductions.{data.inductId}.inductor', '{data.groupId}.inductions.inductor']),
       iff(cont => cont.existing && cont.existing.done, disallow('external')),
-      discard(['userIds', 'groupId']),
+      iff(
+        isProvider('external'),
+        [
+          discard('userIds', 'groupId', 'proofId', 'proofMd', 'completedAt', 'inductorName', 'inductorId'),
+        ],
+      ),
       validateUsers(),
       inductionProof(),
     ],
     patch: [
       restrictMethod(['inductions.{data.inductId}.inductor', '{data.groupId}.inductions.inductor']),
       iff(cont => cont.existing && cont.existing.done, disallow('external')),
-      discard(['userIds', 'groupId']),
+      iff(
+        isProvider('external'),
+        [
+          discard('userIds', 'groupId', 'proofId', 'proofMd', 'completedAt', 'inductorName', 'inductorId'),
+        ],
+      ),
       validateUsers(),
       inductionProof(),
     ],

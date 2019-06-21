@@ -20,4 +20,13 @@ module.exports = function (app) {
 
   service.hooks(hooks);
 
+  service.find({ query: { proofId: { $exists: false }, done: true } }).then(async ({ data }) => {
+    const initProof = async (i) => {
+      if (i >= data.length) return;
+      await service.patch(data[i]._id, {});
+      await initProof(i+1);
+    };
+    await initProof(0);
+  });
+
 };
