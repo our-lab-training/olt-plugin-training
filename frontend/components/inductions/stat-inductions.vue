@@ -27,16 +27,37 @@
         {text: 'Name', value: 'name'},
         {text: 'Completed?', value: 'comPerm'},
         {text: 'Date Completed', value: 'comPerm.createdAt'},
+        {text: 'Inducted By', value: 'inductor.name'},
+        {text: 'Evidence', value: 'completed.proofId', sortable: false},
       ]"
       :items="usersData"
       class="elevation-1"
+      :pagination.sync="pagination"
     >
       <template slot="items" slot-scope="props">
         <td>{{ props.item.username }}</td>
         <td>{{ props.item.name }}</td>
         <td>{{ props.item.comPerm ? 'Yes' : 'No' }}</td>
         <td><span v-if="props.item.comPerm">
-          {{ props.item.comPerm.createdAt | moment('DD/MM/YYYY') }}
+          {{
+            props.item.comPerm.completedAt || props.item.comPerm.createdAt
+            | moment('DD/MM/YYYY')
+          }}
+        </span></td>
+        <td><span v-if="props.item.inductor">
+          {{ props.item.inductor.name }}
+        </span></td>
+        <td><span v-if="props.item.completed && props.item.completed.proofId">
+          <v-tooltip left>
+            <v-btn
+              icon flat
+              :to="`../content/${props.item.completed.proofId}`"
+              slot="activator"
+            >
+              <v-icon>fal fa-file-contract</v-icon>
+            </v-btn>
+            <span>View Induction Evidence Document</span>
+          </v-tooltip>
         </span></td>
       </template>
     </v-data-table>
@@ -56,13 +77,25 @@ export default {
       search: '',
       err: null,
       rand: 1.0,
+      pagination: {
+        descending: true,
+        page: 1,
+        rowsPerPage: 10,
+        sortBy: 'Name',
+      },
     };
   },
   computed: {
-    ...mapGetters('users', { hasPerm: 'hasPerm', currentUser: 'current', findUser: 'find' }),
+    ...mapGetters('users', {
+      hasPerm: 'hasPerm',
+      currentUser: 'current',
+      findUser: 'find',
+      getUser: 'get',
+    }),
     ...mapGetters('groups', { currentGroup: 'current' }),
     ...mapGetters('inductions', { getInduct: 'get', findInduct: 'find', induction: 'current' }),
     ...mapState('inductions', ['isCreatePending', 'isPatchPending', 'isGetPending']),
+    ...mapGetters('completed-inductions', { findComps: 'find' }),
     loading() { return this.isCreatePending || this.isPatchPending || this.isGetPending; },
     inductId() { return this.$route.params.inductId; },
     usersData() {
@@ -75,10 +108,18 @@ export default {
         ];
       }
       return this.findUser({ query }).data
-        .map(user => ({
-          ...user,
-          comPerm: user.perms.userperms.find(p => p.perm.join('.') === `inductions.${this.inductId}.complete`),
-        }));
+        .map((user) => {
+          const completed = this.findComps({
+            query: { userIds: user._id, inductId: this.inductId },
+          }).data.pop();
+          const inductor = completed && this.getUser(completed.createdBy);
+          return {
+            ...user,
+            comPerm: user.perms.userperms.find(p => p.perm.join('.') === `inductions.${this.inductId}.complete`),
+            completed,
+            inductor,
+          };
+        });
     },
   },
 };

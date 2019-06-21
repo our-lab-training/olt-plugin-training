@@ -17,6 +17,17 @@
     <v-tooltip v-if="writePerm" top>
       <v-btn
         slot="activator"
+        @click.stop="evi = true"
+        flat icon
+        :disabled="disabled"
+      >
+        <v-icon>fal fa-file-upload</v-icon>
+      </v-btn>
+      <span>Upload Previous Induction Evidence</span>
+    </v-tooltip>
+    <v-tooltip v-if="writePerm" top>
+      <v-btn
+        slot="activator"
         @click.stop="del = true"
         flat icon
         :disabled="disabled"
@@ -92,13 +103,20 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="evi" max-width="400" persistent>
+      <evidence-upload :show.sync="evi"/>
+    </v-dialog>
   </v-toolbar>
 </template>
 
 <script>
 import { mapGetters, mapState } from 'vuex';
+import evidenceUpload from './evidence-upload-inductions.vue';
 
 export default {
+  components: {
+    evidenceUpload,
+  },
   props: {
     induction: {
       type: Object,
@@ -116,6 +134,7 @@ export default {
   data() {
     return {
       del: false,
+      evi: false,
       delErr: '',
     };
   },
