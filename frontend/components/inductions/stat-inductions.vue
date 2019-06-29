@@ -45,7 +45,7 @@
           }}
         </span></td>
         <td><span v-if="props.item.inductor">
-          {{ props.item.inductor.name }}
+          {{ props.item.completed.inductorName || props.item.inductor.name }}
         </span></td>
         <td><span v-if="props.item.completed && props.item.completed.proofId">
           <v-tooltip left>
@@ -56,7 +56,7 @@
             >
               <v-icon>fal fa-file-contract</v-icon>
             </v-btn>
-            <span>View Induction Evidence Document</span>
+            <span>View Induction Evidence Record</span>
           </v-tooltip>
         </span></td>
       </template>
@@ -112,7 +112,7 @@ export default {
           const completed = this.findComps({
             query: { userIds: user._id, inductId: this.inductId },
           }).data.pop();
-          const inductor = completed && this.getUser(completed.createdBy);
+          const inductor = completed && this.getUser(completed.inductorId || completed.createdBy);
           return {
             ...user,
             comPerm: user.perms.userperms.find(p => p.perm.join('.') === `inductions.${this.inductId}.complete`),
