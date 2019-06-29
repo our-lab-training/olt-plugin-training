@@ -59,7 +59,7 @@
       <uploadInput
         :valid.sync="validFile"
         :save.sync="saveFile"
-        :path="`Inductions/${currentInduction._id}/manual-proof/`"
+        :path="`Inductions/${currentInduction._id}/manual-evidence/`"
       />
     </v-card-text>
     <v-card-actions>
