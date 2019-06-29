@@ -28,8 +28,17 @@
       <v-flex xs12 md8 v-if="id">
         <edit-induct v-if="edit" />
         <stat-induct v-else-if="stat" />
-        <comp-induct v-else-if="hasPerm(`inductions.${id}.inductor`, true)" />
+        <comp-induct v-else-if="comp" />
         <view-induct v-else />
+        &nbsp;
+        <msdoc-viewer
+          v-if="!edit && !stat && completed && completed.proofId"
+          :fileId="completed.proofId"
+          title="Completed Induction Evidence"
+          :back="false"
+          :hidden.sync="hidden"
+          toggle-hidden
+        />
       </v-flex>
     </v-layout>
   </v-container>
@@ -42,6 +51,7 @@ import listInduct from './components/inductions/list-inductions.vue';
 import viewInduct from './components/inductions/view-inductions.vue';
 import statInduct from './components/inductions/stat-inductions.vue';
 import compInduct from './components/inductions/comp-inductions.vue';
+import msdocViewer from '../../../plugins/content/frontend/explorer/view/msdoc.vue';
 
 export default {
   components: {
@@ -50,18 +60,28 @@ export default {
     viewInduct,
     statInduct,
     compInduct,
+    msdocViewer,
   },
   data() {
-    return {};
+    return {
+      hidden: true,
+    };
   },
   computed: {
     ...mapGetters('users', { hasPerm: 'hasPerm', currentUser: 'current' }),
     ...mapGetters('groups', { currentGroup: 'current' }),
     ...mapGetters('inductions', { findLocalInducts: 'find' }),
+    ...mapGetters('completed-inductions', { findLocalComps: 'find' }),
     id() { return this.$route.params.inductId; },
     writePerm() { return this.hasPerm(`${this.currentGroup._id}.inductions.write`); },
     edit() { return this.writePerm && (typeof this.$route.query.edit !== 'undefined' || this.id === 'new'); },
     stat() { return this.writePerm && typeof this.$route.query.stats !== 'undefined'; },
+    comp() { return this.hasPerm(`inductions.${this.id}.inductor`, true); },
+    completed() {
+      return this.id && this.findLocalComps({
+        query: { inductId: this.id, userIds: this.currentUser._id },
+      }).data[0];
+    },
   },
   methods: {
     ...mapActions('inductions', { findInducts: 'find' }),

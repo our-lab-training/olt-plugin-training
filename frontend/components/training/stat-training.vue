@@ -27,9 +27,11 @@
         {text: 'Name', value: 'name'},
         {text: 'Completed?', value: 'comPerm'},
         {text: 'Date Completed', value: 'comPerm.createdAt'},
+        {text: 'Evidence', value: 'comPerm.data.proofId'},
       ]"
       :items="usersData"
       class="elevation-1"
+      :pagination.sync="pagination"
     >
       <template slot="items" slot-scope="props">
         <td>{{ props.item.username }}</td>
@@ -37,6 +39,20 @@
         <td>{{ props.item.comPerm ? 'Yes' : 'No' }}</td>
         <td><span v-if="props.item.comPerm">
           {{ props.item.comPerm.createdAt | moment('DD/MM/YYYY') }}
+        </span></td>
+        <td><span
+          v-if="props.item.comPerm && props.item.comPerm.data && props.item.comPerm.data.proofId"
+        >
+          <v-tooltip left>
+            <v-btn
+              icon flat
+              :to="`../content/${props.item.comPerm.data.proofId}`"
+              slot="activator"
+            >
+              <v-icon>fal fa-file-contract</v-icon>
+            </v-btn>
+            <span>View Training Evidence Record</span>
+          </v-tooltip>
         </span></td>
       </template>
     </v-data-table>
@@ -57,6 +73,12 @@ export default {
       search: '',
       err: null,
       rand: 1.0,
+      pagination: {
+        descending: true,
+        page: 1,
+        rowsPerPage: 10,
+        sortBy: 'Name',
+      },
     };
   },
   computed: {
