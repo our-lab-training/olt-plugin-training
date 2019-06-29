@@ -28,6 +28,15 @@
         <edit-train v-if="edit" />
         <stat-train v-else-if="stat" />
         <view-train v-else />
+        &nbsp;
+        <msdoc-viewer
+          v-if="!edit && !stat && train && train.proofId"
+          :fileId="train.proofId"
+          title="Completed Training Evidence"
+          :back="false"
+          :hidden.sync="hidden"
+          toggle-hidden
+        />
       </v-flex>
     </v-layout>
   </v-container>
@@ -39,6 +48,7 @@ import editTrain from './components/training/edit-training.vue';
 import listTrain from './components/training/list-training.vue';
 import viewTrain from './components/training/view-training.vue';
 import statTrain from './components/training/stat-training.vue';
+import msdocViewer from '../../../plugins/content/frontend/explorer/view/msdoc.vue';
 
 export default {
   components: {
@@ -46,17 +56,22 @@ export default {
     listTrain,
     viewTrain,
     statTrain,
+    msdocViewer,
   },
   data() {
-    return {};
+    return {
+      hidden: true,
+    };
   },
   computed: {
     ...mapGetters('users', { hasPerm: 'hasPerm', currentUser: 'current' }),
     ...mapGetters('groups', { currentGroup: 'current' }),
+    ...mapGetters('trainings', { findTrain: 'find' }),
     id() { return this.$route.params.bindId; },
     writePerm() { return this.hasPerm(`${this.currentGroup._id}.binder.write`); },
     edit() { return this.writePerm && (typeof this.$route.query.edit !== 'undefined' || this.id === 'new'); },
     stat() { return this.writePerm && typeof this.$route.query.stats !== 'undefined'; },
+    train() { return this.findTrain({ query: { bindId: this.id } }).data[0]; },
   },
   methods: {
     ...mapActions('binders', ['find']),
