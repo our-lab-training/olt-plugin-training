@@ -46,7 +46,7 @@ module.exports = {
             isProvider('external'),
             [
               discard('userIds', 'proofId', 'proofMd', 'completedAt', 'inductorName', 'inductorId'),
-              alterItems((item, ctx) => item.inductorId = ctx.params.user._id),
+              alterItems((item, ctx) => ({ ...item, inductorId: ctx.params.user._id })),
             ],
           ),
           validateUsers(),
