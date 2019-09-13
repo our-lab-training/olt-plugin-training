@@ -1,2 +1,2 @@
-# access-plugin-training
-Access Training Plugin
+# olt-plugin-training
+Our Lab Training Training Plugin
